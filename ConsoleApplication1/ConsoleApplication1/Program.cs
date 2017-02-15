@@ -46,57 +46,44 @@ namespace ConsoleApplication3
                 default: return 0;
             }
         }
-       
+
         static List<RateCalendarItem2> compressor(List<RateCalendarItem> I)
         {
-            var groups = I.GroupBy(x => new { x.RoomTypeId, x.RoomAmount, x.AvailableRooms, x.TaxAmount, x.StayDate.DayOfWeek })
-               .OrderBy(x => x.Key.RoomTypeId).ThenBy(x => x.Key.RoomAmount).ThenBy(x => x.Key.AvailableRooms).ThenBy(x => x.Key.TaxAmount)
-               .Select(g => new
-               {
-                   RoomTypeID = g.Key.RoomTypeId,
-                   RoomAmount = g.Key.RoomAmount,
-                   AvailableRooms = g.Key.AvailableRooms,
-                   TaxAmount = g.Key.TaxAmount,
-                   Elements = g.OrderBy(x => x.StayDate)
-               });
-
             var result = new List<RateCalendarItem2>();
-            foreach (var group in groups)
+            foreach (var item in I.OrderBy(i => i.StayDate.Date))
             {
-                foreach (var item in group.Elements)
+                var matchItem = result.FirstOrDefault(rc =>
                 {
-                    var matchItem = result.FirstOrDefault(rc =>
+                    if (rc.AvailableRooms != item.AvailableRooms) return false;
+                    if (rc.RoomAmount != item.RoomAmount) return false;
+                    if (rc.RoomTypeId != item.RoomTypeId) return false;
+                    if (rc.TaxAmount != item.TaxAmount) return false;
+                    if (rc.StayDateEnd.AddDays(7).Date != item.StayDate.Date) return false;
+                    return true;
+                });
+
+                if (matchItem == null)
+                {
+                    result.Add(new RateCalendarItem2
                     {
-                        if (rc.StayDateEnd.AddDays(7).Date != item.StayDate.Date) return false;
-                        if (rc.AvailableRooms != item.AvailableRooms) return false;
-                        if (rc.RoomAmount != item.RoomAmount) return false;
-                        if (rc.RoomTypeId != item.RoomTypeId) return false;
-                        if (rc.TaxAmount != item.TaxAmount) return false;
-                        return true;
+                        AvailableRooms = item.AvailableRooms,
+                        RoomAmount = item.RoomAmount,
+                        RoomTypeId = item.RoomTypeId,
+                        TaxAmount = item.TaxAmount,
+                        StayDateStart = item.StayDate.Date,
+                        StayDateEnd = item.StayDate.Date,
+                        DaysOfWeek = (DaysOfWeek)item.StayDate.DayOfWeek
                     });
-
-                    if (matchItem == null)
-                    {
-                        result.Add(new RateCalendarItem2
-                        {
-                            AvailableRooms = item.AvailableRooms,
-                            RoomAmount = item.RoomAmount,
-                            RoomTypeId = item.RoomTypeId,
-                            TaxAmount = item.TaxAmount,
-                            StayDateStart = item.StayDate.Date,
-                            StayDateEnd = item.StayDate.Date,
-                            DaysOfWeek = (DaysOfWeek)getDayOfWeek(item.StayDate)
-                        });
-
-                    }
-                    else
-                        matchItem.StayDateEnd = item.StayDate.Date;
                 }
+                else
+                    matchItem.StayDateEnd = item.StayDate.Date;
             }
+             var res=result.OrderBy(x => x.RoomTypeId).ThenBy(x => x.RoomAmount).ThenBy(x => x.AvailableRooms).ThenBy(x => x.TaxAmount).ToList();
+                    
 
-            return result;
-
+            return res;
         }
+
         static List<RateCalendarItem2> compressor2(List<RateCalendarItem> I)
         {
             var result = new List<RateCalendarItem2>();
@@ -131,8 +118,9 @@ namespace ConsoleApplication3
             return result;
         }
 
-        static List<RateCalendarItem> readFile(string fileName, List<RateCalendarItem> v)
+        static List<RateCalendarItem> readFile(string fileName)
         {
+            List<RateCalendarItem> v = new List<RateCalendarItem>();
             string[] st = File.ReadAllLines(fileName);
             foreach (string line in st)
             {
@@ -172,19 +160,19 @@ namespace ConsoleApplication3
 
         static void Main(string[] args)
         {
-            List<RateCalendarItem> v = new List<RateCalendarItem>();
             string fileName = "C:\\Users\\Charu Dixit\\Source\\Repos\\first\\ConsoleApplication1\\ConsoleApplication1\\bin\\data2.csv";
 
-            v = readFile(fileName, v);
+            List<RateCalendarItem> v = readFile(fileName);
             Console.WriteLine("File read successfully!!");
 
             List<RateCalendarItem2> v1 = compressor(v);
-            string csvpath1 = "C:\\Users\\Charu Dixit\\Source\\Repos\\first\\ConsoleApplication1\\ConsoleApplication1\\bin\\xyz.csv";
+            string csvpath1 = "C:\\Users\\Charu Dixit\\Source\\Repos\\first\\ConsoleApplication1\\ConsoleApplication1\\bin\\GroupByDay.csv";
             writeFile(csvpath1, v1, 0);
 
             List<RateCalendarItem2> v2 = compressor2(v);
-            string csvpath2 = "C:\\Users\\Charu Dixit\\Source\\Repos\\first\\ConsoleApplication1\\ConsoleApplication1\\bin\\abc.csv";
+            string csvpath2 = "C:\\Users\\Charu Dixit\\Source\\Repos\\first\\ConsoleApplication1\\ConsoleApplication1\\bin\\GroupByDate.csv";
             writeFile(csvpath2, v2, 1);
+
             Console.WriteLine("Output written successfully!!");
 
             Console.Read();
