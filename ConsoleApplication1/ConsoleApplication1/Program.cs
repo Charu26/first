@@ -205,17 +205,17 @@ namespace ConsoleApplication3
         static void Main(string[] args)
         {
             List<RateCalendarItem> v = new List<RateCalendarItem>();
-            string fileName = "C:\\Users\\Charu Dixit\\Documents\\placement\\c#\\assignments\\data2.csv";
+            string fileName = "C:\\Users\\Charu Dixit\\Source\\Repos\\first\\ConsoleApplication1\\ConsoleApplication1\\bin\\data2.csv";
 
-            v = readFile(fileName, v);
+         v = readFile(fileName, v);
             Console.WriteLine("File read successfully!!");
 
             List<RateCalendarItem2> v1 = compressor(v);
-            string csvpath1 = "C:\\Users\\Charu Dixit\\Documents\\placement\\c#\\assignments\\xyz.csv";
+            string csvpath1 = "C:\\Users\\Charu Dixit\\Source\\Repos\\first\\ConsoleApplication1\\ConsoleApplication1\\bin\\xyz.csv";
             writeFile(csvpath1, v1, 0);
 
             List<RateCalendarItem2> v2 = compressor2(v);
-            string csvpath2 = "C:\\Users\\Charu Dixit\\Documents\\placement\\c#\\assignments\\abc.csv";
+            string csvpath2 = "C:\\Users\\Charu Dixit\\Source\\Repos\\first\\ConsoleApplication1\\ConsoleApplication1\\bin\\abc.csv";
             writeFile(csvpath2, v2, 1);
             Console.WriteLine("Output written successfully!!");
 
