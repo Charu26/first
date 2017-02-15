@@ -27,7 +27,7 @@ namespace ConsoleApplication3
         public int AvailableRooms { get; set; }      // Number of rooms available
         public decimal RoomAmount { get; set; }      // Price of a room night
         public decimal TaxAmount { get; set; }       // Taxes for a room night
-       
+        public bool Included { get; set; }
     }
 
     class Program
@@ -47,10 +47,10 @@ namespace ConsoleApplication3
             }
         }
 
-        static List<RateCalendarItem2> compressor(List<RateCalendarItem> I)
+        static List<RateCalendarItem2> GroupByDay(List<RateCalendarItem> ratecalendar)
         {
             var result = new List<RateCalendarItem2>();
-            foreach (var item in I.OrderBy(i => i.StayDate.Date))
+            foreach (var item in ratecalendar.OrderBy(i => i.StayDate.Date))
             {
                 var matchItem = result.FirstOrDefault(rc =>
                 {
@@ -78,16 +78,14 @@ namespace ConsoleApplication3
                 else
                     matchItem.StayDateEnd = item.StayDate.Date;
             }
-             var res=result.OrderBy(x => x.RoomTypeId).ThenBy(x => x.RoomAmount).ThenBy(x => x.AvailableRooms).ThenBy(x => x.TaxAmount).ToList();
-                    
-
+            var res = result.OrderBy(x => x.RoomTypeId).ThenBy(x => x.RoomAmount).ThenBy(x => x.AvailableRooms).ThenBy(x => x.TaxAmount).ToList();
             return res;
-        }
 
-        static List<RateCalendarItem2> compressor2(List<RateCalendarItem> I)
+        }
+        static List<RateCalendarItem2> GroupByDate(List<RateCalendarItem> rateCalendar)
         {
             var result = new List<RateCalendarItem2>();
-            foreach (var item in I.OrderBy(i => i.StayDate.Date))
+            foreach (var item in rateCalendar.OrderBy(i => i.StayDate.Date))
             {
                 var matchItem = result.FirstOrDefault(rc =>
                 {
@@ -118,15 +116,15 @@ namespace ConsoleApplication3
             return result;
         }
 
-        static List<RateCalendarItem> readFile(string fileName)
+        static List<RateCalendarItem> Convert(List<string> data)
         {
             List<RateCalendarItem> v = new List<RateCalendarItem>();
-            string[] st = File.ReadAllLines(fileName);
-            foreach (string line in st)
+            foreach (string line in data)
             {
+
                 string[] s = line.Split(',');
                 RateCalendarItem Temp = new RateCalendarItem();
-                Temp.StayDate = DateTime.Parse(s[1]);
+                Temp.StayDate = DateTime.ParseExact(s[1], "d/M/yyyy", System.Globalization.CultureInfo.InvariantCulture);
                 Temp.RoomTypeId = s[2];
                 Temp.AvailableRooms = Int32.Parse(s[3]);
                 Temp.RoomAmount = Decimal.Parse(s[4]);
@@ -135,6 +133,7 @@ namespace ConsoleApplication3
             }
             return v;
         }
+        
         static void writeFile(string csvpath, List<RateCalendarItem2> v2, int i)
         {
             StringBuilder csvcontent = new StringBuilder();
@@ -160,23 +159,30 @@ namespace ConsoleApplication3
 
         static void Main(string[] args)
         {
-            string fileName = "C:\\Users\\Charu Dixit\\Source\\Repos\\first\\ConsoleApplication1\\ConsoleApplication1\\bin\\data2.csv";
+            
+            string fileName = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, System.AppDomain.CurrentDomain.RelativeSearchPath ?? "");
+            fileName += "data2.csv";
 
-            List<RateCalendarItem> v = readFile(fileName);
+            //1. Read data and convert
+            var data = File.ReadAllLines(fileName).ToList();
+            var rateCalendarList = Convert(data);
+
             Console.WriteLine("File read successfully!!");
 
-            List<RateCalendarItem2> v1 = compressor(v);
-            string csvpath1 = "C:\\Users\\Charu Dixit\\Source\\Repos\\first\\ConsoleApplication1\\ConsoleApplication1\\bin\\GroupByDay.csv";
-            writeFile(csvpath1, v1, 0);
+            //2. Process data
+            List<RateCalendarItem2> dayWiseResult = GroupByDay(rateCalendarList);
 
-            List<RateCalendarItem2> v2 = compressor2(v);
-            string csvpath2 = "C:\\Users\\Charu Dixit\\Source\\Repos\\first\\ConsoleApplication1\\ConsoleApplication1\\bin\\GroupByDate.csv";
-            writeFile(csvpath2, v2, 1);
+            List<RateCalendarItem2> dateWiseResult = GroupByDate(rateCalendarList);
+
+            //3. write data
+            writeFile("DayWiseGroup.csv", dayWiseResult, 0);
+            writeFile("DateWiseGroup.csv", dateWiseResult, 1);
 
             Console.WriteLine("Output written successfully!!");
-
             Console.Read();
-      }
+
+
+        }
 
     }
 }
