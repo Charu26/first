@@ -27,7 +27,7 @@ namespace ConsoleApplication3
         public int AvailableRooms { get; set; }      // Number of rooms available
         public decimal RoomAmount { get; set; }      // Price of a room night
         public decimal TaxAmount { get; set; }       // Taxes for a room night
-        public bool Included { get; set; }
+       
     }
 
     class Program
