@@ -18,11 +18,6 @@ namespace ConsoleApplication3
         public int AvailableRooms { get; set; }      // Number of rooms available
         public decimal RoomAmount { get; set; }      // Price of a room night
         public decimal TaxAmount { get; set; }       // Taxes for a room night
-
-        public void display()
-        {
-            Console.WriteLine(StayDateStart.DayOfWeek + " " + StayDateStart.Date.ToShortDateString() + " " + StayDateEnd.Date.ToShortDateString() + " " + RoomTypeId + " " + AvailableRooms + " " + RoomAmount + " " + TaxAmount);
-        }
     }
 
     public class RateCalendarItem
@@ -33,10 +28,6 @@ namespace ConsoleApplication3
         public decimal RoomAmount { get; set; }      // Price of a room night
         public decimal TaxAmount { get; set; }       // Taxes for a room night
         public bool Included { get; set; }
-        public void display()
-        {
-            Console.WriteLine(StayDate.Date.ToShortDateString() + " " + StayDate.DayOfWeek + " " + RoomTypeId + " " + AvailableRooms + " " + RoomAmount + " " + TaxAmount);
-        }
     }
 
     class Program
@@ -55,22 +46,7 @@ namespace ConsoleApplication3
                 default: return 0;
             }
         }
-        static bool allIncluded(List<RateCalendarItem> I)
-        {
-            foreach (var item in I)
-            {
-                if (item.Included == false)
-                    return false;
-            }
-            return true;
-        }
-        static int skip(int a, int b)
-        {
-            int n = 0; ;
-
-            return n;
-        }
-
+       
         static List<RateCalendarItem2> compressor(List<RateCalendarItem> I)
         {
             var groups = I.GroupBy(x => new { x.RoomTypeId, x.RoomAmount, x.AvailableRooms, x.TaxAmount, x.StayDate.DayOfWeek })
@@ -87,7 +63,6 @@ namespace ConsoleApplication3
             var result = new List<RateCalendarItem2>();
             foreach (var group in groups)
             {
-                int i = 0;
                 foreach (var item in group.Elements)
                 {
                     var matchItem = result.FirstOrDefault(rc =>
@@ -115,14 +90,7 @@ namespace ConsoleApplication3
 
                     }
                     else
-                    {
                         matchItem.StayDateEnd = item.StayDate.Date;
-                        if (i == group.Elements.Count() - 1)
-                        {
-                            break;
-                        }
-                    }
-                    i++;
                 }
             }
 
