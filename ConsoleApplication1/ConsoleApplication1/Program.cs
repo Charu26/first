@@ -188,9 +188,7 @@ namespace ConsoleApplication3
             Console.WriteLine("Output written successfully!!");
 
             Console.Read();
-
-
-        }
+      }
 
     }
 }
