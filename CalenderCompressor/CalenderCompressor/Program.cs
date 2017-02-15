@@ -1,10 +1,11 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
 
-namespace ConsoleApplication3
+namespace CalenderCompressor
 {
     [Flags]
     public enum DaysOfWeek { Sun = 1, Mon = 2, Tue = 4, Wed = 8, Thu = 16, Fri = 32, Sat = 64 }
@@ -30,22 +31,8 @@ namespace ConsoleApplication3
         public bool Included { get; set; }
     }
 
-    class Program
+    class MainClass
     {
-        static int getDayOfWeek(DateTime d)
-        {
-            switch (d.DayOfWeek.ToString())
-            {
-                case "Sunday": return 1;
-                case "Monday": return 2;
-                case "Tuesday": return 4;
-                case "Wednesday": return 8;
-                case "Thursday": return 16;
-                case "Friday": return 32;
-                case "Saturday": return 64;
-                default: return 0;
-            }
-        }
 
         static List<RateCalendarItem2> GroupByDay(List<RateCalendarItem> ratecalendar)
         {
@@ -133,7 +120,7 @@ namespace ConsoleApplication3
             }
             return v;
         }
-        
+
         static void writeFile(string csvpath, List<RateCalendarItem2> v2, int i)
         {
             StringBuilder csvcontent = new StringBuilder();
@@ -159,7 +146,7 @@ namespace ConsoleApplication3
 
         static void Main(string[] args)
         {
-            
+
             string fileName = System.IO.Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, System.AppDomain.CurrentDomain.RelativeSearchPath ?? "");
             fileName += "data2.csv";
 
