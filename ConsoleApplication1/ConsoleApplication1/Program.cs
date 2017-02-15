@@ -175,7 +175,7 @@ namespace ConsoleApplication3
             List<RateCalendarItem> v = new List<RateCalendarItem>();
             string fileName = "C:\\Users\\Charu Dixit\\Source\\Repos\\first\\ConsoleApplication1\\ConsoleApplication1\\bin\\data2.csv";
 
-         v = readFile(fileName, v);
+            v = readFile(fileName, v);
             Console.WriteLine("File read successfully!!");
 
             List<RateCalendarItem2> v1 = compressor(v);
